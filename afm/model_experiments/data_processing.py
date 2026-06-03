@@ -1,6 +1,15 @@
 # Libraries
 import pandas as pd
 import numpy as np
+from scipy.stats import t 
+from scipy.stats import norm, chi2
+# from toleranceinterval import twoside
+import matplotlib.pyplot as plt
+
+# Set the font family and size to use for Matplotlib figures.
+plt.rcParams['font.family'] = 'serif'
+plt.rcParams['font.size'] = 20
+
 # SIMULATION NOMINAL
 # --------------- 
 # Nominal Model for low inlet velocity 
@@ -16,6 +25,8 @@ sim3 = pd.read_csv("data/simulation/samples/S3_G3_V0_0642.csv")
 center1 = sim1[' Y [ m ]'][0] + 0.008 # Scale to center at 0
 center2 = sim2[' Y [ m ]'][0] + 0.008 # Scale to center at 0
 center3 = sim3[' Y [ m ]'][0] + 0.008 # Scale to center at 0
+
+sim_data = [sim1,sim2,sim3]
 # Calculate the Mean, Standard Deviation, and Standard Error for all samples
 avgsim,sdsim = [],[]
 n,i = 3,0
@@ -26,12 +37,14 @@ while i < len(sim1[' Y [ m ]']):
     i+=1
 plussim = avgsim + 2*max(sdsim)/np.sqrt(n) # 2 standard deviations
 minussim = avgsim - 2*max(sdsim)/np.sqrt(n) # 2 standard deviations
+
 # -------------------------------------------------------------------
 # EXPERIMENT SAMPLING
 # --------------- 
 expS1 = pd.read_csv("data/experiments/S1_Low_Exp_Outlet.csv") 
 expS2 = pd.read_csv("data/experiments/S2_Low_Exp_Outlet.csv") 
 expS3 = pd.read_csv("data/experiments/S3_Low_Exp_Outlet.csv") 
+exp_data = [expS1,expS2,expS3]
 n = 3  # Number of Samples
 
 # Calculate the Mean,Standard Deviation, Standard Error
@@ -45,3 +58,225 @@ while i < len(expS1['x (mm)']):
     i+=1
 plus = avgexp + 1*max(sdexp)/np.sqrt(n)
 minus = avgexp - 1*max(sdexp)/np.sqrt(n)
+
+# -------------------------------------------------------------------
+def peak_avg(data, type, mirror_sim=True):
+    if type == 'exp':
+        x = data['x (mm)'].to_numpy()
+        V = data['V (m/s)'].to_numpy()
+    elif type == 'sim':
+        y = data[' Y [ m ]'].to_numpy()
+        V = data[' Velocity [ m s^-1 ]'].to_numpy()
+
+        # experiment radius from diameter
+        radius = 0.00550668 / 2  # m
+
+        # use simulation peak as centerline
+        center = y[np.argmax(V)]
+
+        r = np.abs(y - center)
+
+        # keep only same radius around centerline
+        mask = r <= radius
+        r = r[mask]
+        V = V[mask]
+
+        idx = np.argsort(r)
+        r = r[idx]
+        V = V[idx]
+
+        if mirror_sim:
+            x = np.concatenate((-r[:0:-1], r))
+            V = np.concatenate((V[:0:-1], V))
+        else:
+            x = r
+
+    peak = np.max(V)
+    # Trapezoidal average since spacing is not uniform
+    avg = np.trapezoid(V,x) /(x.max() - x.min())
+    return peak,avg
+
+peak_sim = []
+avg_sim = []
+
+for df in sim_data:
+    peak, avg = peak_avg(df,'sim')
+    peak_sim.append(peak)
+    avg_sim.append(avg)
+
+peak_exp = []
+avg_exp = []
+
+for df in exp_data:
+    peak, avg = peak_avg(df,'exp')
+    peak_exp.append(peak)
+    avg_exp.append(avg)
+
+### Confidence Intervals 95%
+def confidence_interval(data, alpha=0.05):
+    data = np.asarray(data)
+    n = len(data)
+    mean = np.mean(data)
+    std = np.std(data, ddof=1)
+    tval = t.ppf(1-alpha/2, n-1)
+    half_width = tval * std / np.sqrt(n)
+    return mean, mean-half_width, mean+half_width
+
+mean_peak_exp, ci_low_exp, ci_high_exp = confidence_interval(peak_exp)
+# print(f'Confidence Interval 95% - Experiment')
+# print(f'Mean Peak Experiments: {mean_peak_exp}')
+# print(f'CI Low: {ci_low_exp},CI High: {ci_high_exp}')
+# print('------------------------------------------')
+mean_peak_sim, ci_low_sim, ci_high_sim = confidence_interval(peak_sim)
+# print(f'Confidence Interval 95% - Simulation')
+# print(f'Mean Peak Simulations: {mean_peak_sim}')
+# print(f'CI Low: {ci_low_sim},CI High: {ci_high_sim}')
+
+
+# 95/95 tolerance interval 
+def tolerance_interval(data, k=4.94):
+    # For n=3, a two-sided 95/95 TI has approximately k=4.94
+    mean = np.mean(data)
+    std = np.std(data, ddof=1)
+    return mean-k*std, mean+k*std
+
+ti_low_exp, ti_high_exp = tolerance_interval(peak_exp)
+# print(f'Tolerance Interval 95/95 - Experiment')
+# print(f'TI Low: {ti_low_exp},TI High: {ti_high_exp}')
+# print('---------------------------------------------')
+ti_low_sim, ti_high_sim = tolerance_interval(peak_sim)
+# print(f'Tolerance Interval 95/95 - Simulation')
+# print(f'TI Low: {ti_low_sim},TI High: {ti_high_sim}')
+
+
+# Also compute avg intervals
+mean_avg_exp, ci_low_avg_exp, ci_high_avg_exp = confidence_interval(avg_exp)
+mean_avg_sim, ci_low_avg_sim, ci_high_avg_sim = confidence_interval(avg_sim)
+
+ti_low_avg_exp, ti_high_avg_exp = tolerance_interval(avg_exp)
+ti_low_avg_sim, ti_high_avg_sim = tolerance_interval(avg_sim)
+
+summary = pd.DataFrame({
+    "Source": ["Exp", "Sim", "Exp", "Sim"],
+    "Metric": ["Peak Velocity", "Peak Velocity", "Average Velocity", "Average Velocity"],
+    "Mean": [
+        mean_peak_exp,
+        mean_peak_sim,
+        mean_avg_exp,
+        mean_avg_sim
+    ],
+    "CI Low": [
+        ci_low_exp,
+        ci_low_sim,
+        ci_low_avg_exp,
+        ci_low_avg_sim
+    ],
+    "CI High": [
+        ci_high_exp,
+        ci_high_sim,
+        ci_high_avg_exp,
+        ci_high_avg_sim
+    ],
+    "TI Low": [
+        ti_low_exp,
+        ti_low_sim,
+        ti_low_avg_exp,
+        ti_low_avg_sim
+    ],
+    "TI High": [
+        ti_high_exp,
+        ti_high_sim,
+        ti_high_avg_exp,
+        ti_high_avg_sim
+    ]
+})
+summary.to_csv('ci_ti_sim_exp.csv', index=False)
+# print(summary)
+
+def plot_intervals_side_by_side(summary, low_col, high_col, title, figname):
+
+    metrics = ["Peak Velocity", "Average Velocity"]
+
+    fig, axes = plt.subplots(1, 2, figsize=(10, 5), sharey=True)
+
+    for ax, metric in zip(axes, metrics):
+
+        tmp = summary[summary["Metric"] == metric].copy()
+
+        # Force order: Experiment then Simulation
+        tmp["Source"] = pd.Categorical(
+            tmp["Source"],
+            categories=["Exp", "Sim"],
+            ordered=True
+        )
+        tmp = tmp.sort_values("Source")
+
+        labels = tmp["Source"].to_numpy()
+
+        # Smaller spacing between Exp and Sim
+        x = np.array([0.0, 0.2])
+
+        means = tmp["Mean"].to_numpy()
+        lows = tmp[low_col].to_numpy()
+        highs = tmp[high_col].to_numpy()
+
+        yerr = np.vstack([
+            means - lows,
+            highs - means
+        ])
+
+        ax.errorbar(
+            x,
+            means,
+            yerr=yerr,
+            fmt="o",
+            capsize=6,
+            elinewidth=3,
+            linewidth=2
+        )
+
+        ax.set_xticks(x)
+        ax.set_xticklabels(labels)
+        ax.set_xlim(-0.25, 0.60)
+        ax.set_ylim(0.4, 1.20)
+
+        ax.set_title(metric)
+        ax.grid(True, axis="y", alpha=0.3)
+
+    axes[0].set_ylabel("Velocity (m/s)")
+    fig.suptitle(title)
+
+    plt.tight_layout()
+    plt.savefig(figname, dpi=300)
+    plt.show()
+
+# plot_intervals(
+#     summary,
+#     low_col="CI Low",
+#     high_col="CI High",
+#     title="95% Confidence Intervals for Peak and Average Velocity",
+#     figname='figures/confidence_interval_expvssim.jpg'
+# )
+# plot_intervals(
+#     summary,
+#     low_col="TI Low",
+#     high_col="TI High",
+#     title="95/95 Tolerance Intervals for Peak and Average Velocity",
+#     figname='figures/tolerance_interval_expvssim.jpg'
+# )
+
+
+plot_intervals_side_by_side(
+    summary,
+    low_col="CI Low",
+    high_col="CI High",
+    title="95% Confidence Intervals",
+    figname='figures/confidence_interval_expvssim.jpg'
+)
+plot_intervals_side_by_side(
+    summary,
+    low_col="TI Low",
+    high_col="TI High",
+    title="95/95 Tolerance Intervals",
+    figname='figures/tolerance_interval_expvssim.jpg'
+)
