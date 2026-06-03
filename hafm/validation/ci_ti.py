@@ -288,3 +288,138 @@ for t in target_times:
     )
 
 
+############## Heatmap
+def ecdf_values(data, x):
+    data = np.sort(np.asarray(data))
+    return np.searchsorted(data, x, side="right") / len(data)
+
+
+def area_metric_ecdf(exp_values, sim_values, normalize=False):
+    exp_values = np.asarray(exp_values)
+    sim_values = np.asarray(sim_values)
+    x = np.linspace(min(exp_values.min(), sim_values.min()),max(exp_values.max(), sim_values.max()),1000)
+    F_exp = ecdf_values(exp_values, x)
+    F_sim = ecdf_values(sim_values, x)
+    area = np.trapezoid(np.abs(F_exp - F_sim), x)
+    if normalize:
+        area = (area/ np.mean(exp_values))*100 
+        # area = area/ np.mean(F_exp)  
+        # area = (area/ (x.max() - x.min()))*100
+    return area
+
+def area_metric_ecdf_signed(exp_values, sim_values, normalize=False):
+    exp_values = np.asarray(exp_values)
+    sim_values = np.asarray(sim_values)
+    x = np.linspace(min(exp_values.min(), sim_values.min()),max(exp_values.max(), sim_values.max()),1000)
+    F_exp = ecdf_values(exp_values, x)
+    F_sim = ecdf_values(sim_values, x)
+    area = np.trapezoid((F_exp - F_sim), x)
+    if normalize:
+        area = (area/ np.mean(exp_values))*100 
+        # area = area/ np.mean(F_exp)  
+        # area = (area/ (x.max() - x.min()))*100
+    return area
+
+area_rows = []
+for target_time in target_times[1:]:
+    for loc in ["R0", "R1", "R2", "R4"]:
+        # Simulation values
+        sim_values = []
+        for df in sim_data:
+            time = df["Time [s]"].to_numpy()
+            T = df[sim_cols[loc]].to_numpy()
+            T0 = T[0]
+            dT = T - T0
+            idx = np.argmin(np.abs(time - target_time))
+            sim_values.append(dT[idx])
+        # Experiment values
+        exp_values = []
+        exp_time = tempE["Time"].to_numpy()
+
+        for col in exp_cols[loc]:
+            T = tempE[col].to_numpy()
+            idx0 = np.argmin(np.abs(exp_time - heating_start_exp))
+            T0 = T[idx0]
+            exp_target_time = heating_start_exp + target_time
+            idx = np.argmin(np.abs(exp_time - exp_target_time))
+            dT = T[idx] - T0
+            exp_values.append(dT)
+        # print(f'exp_values = {exp_values}')
+        area = area_metric_ecdf(exp_values, sim_values, normalize=True)
+        area_rows.append({"Time": target_time,"Radius": loc,"Area Metric": area})
+area_df = pd.DataFrame(area_rows)
+# area_df.to_csv("areaMetric_temperature_rise_by_time.csv", index=False)
+area_df.to_csv("areaMetric_temperature_rise_by_time_normalizedavgExpPercent.csv", index=False)
+# print(area_df)
+
+heatmap_data = area_df.pivot(index="Time",columns="Radius",values="Area Metric")
+
+# Rename columns for figure labels
+heatmap_data = heatmap_data.rename(columns={"R0": "0mm","R1": "1mm","R2": "2mm","R4": "4mm"})
+plt.figure(figsize=(10, 8))
+im = plt.imshow(heatmap_data.values,aspect="auto",origin="upper")
+cbar = plt.colorbar(im)
+# cbar.set_label("Area Metric",rotation=90,labelpad=15)
+cbar.set_label("Normalized Area Metric (%)",rotation=90,labelpad=15)
+# cbar.set_label("Normalized Area Metric",rotation=90,labelpad=15)
+plt.xticks(np.arange(len(heatmap_data.columns)),heatmap_data.columns)
+plt.yticks(np.arange(len(heatmap_data.index)),heatmap_data.index)
+plt.xlabel("Radius")
+plt.ylabel("Time (seconds)")
+plt.title("Area Metric")
+for i in range(heatmap_data.shape[0]):
+    for j in range(heatmap_data.shape[1]):
+        plt.text(j,i,f"{heatmap_data.values[i, j]:.2f}",ha="center",va="center",color="white")
+plt.tight_layout()
+plt.savefig("figures/AreaMetric_HeatMap_normalizedavgExpPercent.png", dpi=300)
+plt.show()
+
+
+#####################Signed errors 
+signed_rows = []
+for target_time in target_times[1:]:
+    for loc in ["R0", "R1", "R2", "R4"]:
+        # Simulation values
+        sim_values = []
+        for df in sim_data:
+            time = df["Time [s]"].to_numpy()
+            T = df[sim_cols[loc]].to_numpy()
+            T0 = T[0]
+            dT = T - T0
+            idx = np.argmin(np.abs(time - target_time))
+            sim_values.append(dT[idx])
+        # Experiment values
+        exp_values = []
+        exp_time = tempE["Time"].to_numpy()
+        for col in exp_cols[loc]:
+            T = tempE[col].to_numpy()
+            idx0 = np.argmin(np.abs(exp_time - heating_start_exp))
+            T0 = T[idx0]
+            exp_target_time = heating_start_exp + target_time
+            idx = np.argmin(np.abs(exp_time - exp_target_time))
+            dT = T[idx] - T0
+            exp_values.append(dT)
+        # print(f'exp_values = {exp_values}')
+        area_signed = area_metric_ecdf_signed(exp_values, sim_values, normalize=True)
+        signed_rows.append({"Time": target_time,"Radius": loc,"Signed Area Metric": area_signed})
+signed_df = pd.DataFrame(signed_rows)
+signed_heatmap = signed_df.pivot(index="Time",columns="Radius",values="Signed Area Metric")
+signed_heatmap = signed_heatmap.rename(columns={"R0": "0mm", "R1": "1mm", "R2": "2mm", "R4": "4mm"})
+vmax = np.nanmax(np.abs(signed_heatmap.values))
+
+plt.figure(figsize=(10, 8))
+im = plt.imshow(signed_heatmap.values,aspect="auto",origin="upper",cmap="coolwarm",vmin=-vmax,vmax=vmax)
+cbar = plt.colorbar(im)
+cbar.set_label("Normalized Area Metric (%)", rotation=90, labelpad=15)
+plt.xticks(np.arange(len(signed_heatmap.columns)),signed_heatmap.columns)
+plt.yticks(np.arange(len(signed_heatmap.index)),signed_heatmap.index)
+plt.xlabel("Radius")
+plt.ylabel("Time (seconds)")
+plt.title("Area Metric")
+for i in range(signed_heatmap.shape[0]):
+    for j in range(signed_heatmap.shape[1]):
+        val = signed_heatmap.values[i, j]
+        plt.text(j,i,f"{val:.2f}",ha="center",va="center",color="black")
+plt.tight_layout()
+plt.savefig("figures/AreaMetric_HeatMap_normalizedAvgExpPercent_signed.png", dpi=300)
+plt.show()

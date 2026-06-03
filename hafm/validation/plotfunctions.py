@@ -275,8 +275,8 @@ def area_metricPlots(tbypoint,timeEdiff,expS,timeE):
             ecdfExp.x[0] = ecdfExp.x[1]
 #             ecdfSimNorm = ECDF(normSim[s]) 
             ecdfSim = ECDF(sim[s])
-            pyplot.step(ecdfExp.x,ecdfExp.y,'--o', where='post',label='Experiments')
-            pyplot.step(ecdfSim.x,ecdfSim.y,'--o', where='post',label='Simulations')
+            pyplot.step(ecdfExp.x,ecdfExp.y,'--o', where='post',label='Experiment')
+            pyplot.step(ecdfSim.x,ecdfSim.y,'--o', where='post',label='Simulation')
             pyplot.legend()
             pyplot.xlim(0, 3.1)
     #         pyplot.savefig('figures/ecdf_t%i_r%i.png'%t%r, dpi=300);
