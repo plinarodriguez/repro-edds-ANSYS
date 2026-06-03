@@ -163,7 +163,7 @@ summary.to_csv('ci_ti_sim_exp.csv', index=False)
 
 def plot_intervals_side_by_side(summary, low_col, high_col, title, figname):
     metrics = ["Peak Velocity", "Average Velocity"]
-    fig, axes = plt.subplots(1, 2, figsize=(9,8), sharey=True)
+    fig, axes = plt.subplots(1, 2, figsize=(12,6), sharey=True)
     for ax, metric in zip(axes, metrics):
         tmp = summary[summary["Metric"] == metric].copy()
         tmp["Source"] = pd.Categorical(tmp["Source"],categories=["Exp", "Sim"],ordered=True)
