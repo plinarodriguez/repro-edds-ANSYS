@@ -345,11 +345,11 @@ for target_time in target_times[1:]:
             dT = T[idx] - T0
             exp_values.append(dT)
         # print(f'exp_values = {exp_values}')
-        area = area_metric_ecdf(exp_values, sim_values, normalize=True)
+        area = area_metric_ecdf(exp_values, sim_values, normalize=False)
         area_rows.append({"Time": target_time,"Radius": loc,"Area Metric": area})
 area_df = pd.DataFrame(area_rows)
 # area_df.to_csv("areaMetric_temperature_rise_by_time.csv", index=False)
-area_df.to_csv("areaMetric_temperature_rise_by_time_normalizedavgExpPercent.csv", index=False)
+area_df.to_csv("areaMetric_temperature_rise_by_time.csv", index=False)
 # print(area_df)
 
 heatmap_data = area_df.pivot(index="Time",columns="Radius",values="Area Metric")
@@ -359,8 +359,8 @@ heatmap_data = heatmap_data.rename(columns={"R0": "0mm","R1": "1mm","R2": "2mm",
 plt.figure(figsize=(10, 8))
 im = plt.imshow(heatmap_data.values,aspect="auto",origin="upper")
 cbar = plt.colorbar(im)
-# cbar.set_label("Area Metric",rotation=90,labelpad=15)
-cbar.set_label("Normalized Area Metric (%)",rotation=90,labelpad=15)
+cbar.set_label(r"Area Metric ($^{\circ}$C)",rotation=90,labelpad=15)
+# cbar.set_label("Normalized Area Metric (%)",rotation=90,labelpad=15)
 # cbar.set_label("Normalized Area Metric",rotation=90,labelpad=15)
 plt.xticks(np.arange(len(heatmap_data.columns)),heatmap_data.columns)
 plt.yticks(np.arange(len(heatmap_data.index)),heatmap_data.index)
@@ -371,7 +371,7 @@ for i in range(heatmap_data.shape[0]):
     for j in range(heatmap_data.shape[1]):
         plt.text(j,i,f"{heatmap_data.values[i, j]:.2f}",ha="center",va="center",color="white")
 plt.tight_layout()
-plt.savefig("figures/AreaMetric_HeatMap_normalizedavgExpPercent.png", dpi=300)
+plt.savefig("figures/AreaMetric_HeatMap.png", dpi=300)
 plt.show()
 
 
