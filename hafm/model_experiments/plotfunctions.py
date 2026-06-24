@@ -37,8 +37,8 @@ def sim_exp_pointlabels(timeE,avg,u,l,tempS1,tempS2,tempS3,tempS4,tempS5,
                   tempS6,tempS7,tempS8,tempS9,tempS10,
                   tempSLab,r,point,save,plotexp):
     pyplot.figure(figsize=(6.4,4.8))
-    pyplot.xlabel('time [s]')
-    pyplot.ylabel('Temperature Rise')
+    pyplot.xlabel('Time [s]')
+    pyplot.ylabel(r'Temperature Rise, $\Delta T$')
     sampleplotslabels(point,tempS1,tempS2,tempS3,tempS4,tempS5,tempS6,tempS7,tempS8,tempS9,tempS10,tempSLab)
     if plotexp == 'YES':
         pyplot.plot(timeE[75:150]-19.650, avg,linestyle='-',label="Experiment",color="black")
@@ -61,8 +61,8 @@ def exp_statsvsraw_2plots(radius, time, average,upperbound,lowerbound,rawdata,sa
     pyplot.figure(figsize=(20,7)) 
     pyplot.subplot(1, 2, 1) 
     pyplot.title('Experiments (radius='+r+'mm)') 
-    pyplot.xlabel('time [s]') 
-    pyplot.ylabel('Temperature Rise') 
+    pyplot.xlabel('Time [s]') 
+    pyplot.ylabel(r'Temperature Rise, $\Delta T$') 
     pyplot.plot( time[75:150]-20,average,linestyle='-',color= "black",label= "Mean") 
     pyplot.plot( time[75:150]-20,upperbound,linestyle='-',color= "gray",label= "SD" ) 
     pyplot.plot( time[75:150]-20,lowerbound,linestyle='-',color= "gray") 
@@ -89,8 +89,8 @@ def exp_ALL_2plots(timeE,avg0,avg1,avg2,avg4,
     pyplot.figure(figsize=(20,7))
     pyplot.subplot(1, 2, 1)
     pyplot.title('Experiments')
-    pyplot.xlabel('time [s]')
-    pyplot.ylabel('Temperature Rise')
+    pyplot.xlabel('Time [s]')
+    pyplot.ylabel(r'Temperature Rise, $\Delta T$')
     pyplot.plot(timeE[75:150]-20, avg0,linestyle='dashdot',label="r=0",color="black",linewidth=4)
     pyplot.plot(timeE[75:150]-20, u0,linestyle='-',color="gray")
     pyplot.plot(timeE[75:150]-20, l0,linestyle='-',color="gray")
@@ -149,8 +149,8 @@ def exp_ALL_1plot(timeE,avg0,avg1,avg2,avg4,
                    tempET1,tempET2,tempET3,tempET4,save):
 #     pyplot.figure(figsize=(20,7))
     pyplot.title('Experiments')
-    pyplot.xlabel('time [s]')
-    pyplot.ylabel('Temperature Rise')
+    pyplot.xlabel('Time [s]')
+    pyplot.ylabel(r'Temperature Rise, $\Delta T$')
     pyplot.plot(timeE[75:150]-20, avg0,linestyle='dashdot',label="r=0",color="black",linewidth=4)
     pyplot.plot(timeE[75:150]-20, u0,linestyle='-',color="gray")
     pyplot.plot(timeE[75:150]-20, l0,linestyle='-',color="gray")
@@ -188,37 +188,37 @@ def sim_exp_uncertainties_ALL(timeE,avg0,u0,l0,avg1,u1,l1,avg2,u2,l2,avg4,u4,l4,
     pyplot.figure(figsize=(12,8))
     pyplot.title('Points 0-4: Uncertainties')
     if 0 in plotSradius:
-        pyplot.plot(tempS1['Time [s]'],meanSamplesP0, label='Point0-Sim ', color='magenta',linewidth='5')
+        pyplot.plot(tempS1['Time [s]'],meanSamplesP0, label='Point0-Sim ', color='magenta', linewidth='3')
         pyplot.fill_between(tempS1['Time [s]'],meanSamplesP0+1*np.max(stdSamplesP0),meanSamplesP0-1*np.max(stdSamplesP0), color='purple',alpha=1.0)
     if 1 in plotSradius:
-        pyplot.plot(tempS1['Time [s]'],meanSamplesP1, label='Point1-Sim', color='lightgreen',linewidth='5')
+        pyplot.plot(tempS1['Time [s]'],meanSamplesP1, label='Point1-Sim', color='lightgreen', linewidth='3')
         pyplot.fill_between(tempS1['Time [s]'],meanSamplesP1+1*np.max(stdSamplesP1),meanSamplesP1-1*np.max(stdSamplesP1), color='green',alpha=0.6)
     if 2 in plotSradius:
-        pyplot.plot(tempS1['Time [s]'],meanSamplesP2, label='Point2-Sim', color='yellow',linewidth='5')
+        pyplot.plot(tempS1['Time [s]'],meanSamplesP2, label='Point2-Sim', color='yellow', linewidth='3')
         pyplot.fill_between(tempS1['Time [s]'],meanSamplesP2+1*np.max(stdSamplesP2),meanSamplesP2-1*np.max(stdSamplesP2), color='orange',alpha=0.6)
     if 3 in plotSradius:
-        pyplot.plot(tempS1['Time [s]'],meanSamplesP3, label='Point3-Sim', color='white',linewidth='5')
+        pyplot.plot(tempS1['Time [s]'],meanSamplesP3, label='Point3-Sim', color='white', linewidth='3')
         pyplot.fill_between(tempS1['Time [s]'],meanSamplesP3+1*np.max(stdSamplesP3),meanSamplesP3-1*np.max(stdSamplesP3), color='black',alpha=0.6)
     if 4 in plotSradius:
-        pyplot.plot(tempS1['Time [s]'],meanSamplesP4, label='Point4-Sim', color='cyan',linewidth='5')
+        pyplot.plot(tempS1['Time [s]'],meanSamplesP4, label='Point4-Sim', color='cyan', linewidth='3')
         pyplot.fill_between(tempS1['Time [s]'],meanSamplesP4+1*np.max(stdSamplesP4),meanSamplesP4-1*np.max(stdSamplesP4), color='cadetblue')
 
     if plotexp == 'YES':
         if 0 in plotSradius:
-            pyplot.plot(timeE[75:150]-19.65, avg0,linestyle='-',label="Point0-Exp",color="darkblue",linewidth='5')
+            pyplot.plot(timeE[75:150]-19.65, avg0,linestyle='-',label="Point0-Exp",color="darkblue", linewidth='3')
             pyplot.fill_between(timeE[75:150]-19.65,u0, l0, color="lightblue",alpha=0.5)
         if 1 in plotSradius:
-            pyplot.plot(timeE[75:150]-19.65, avg1,linestyle='-',label="Point1-Exp",color="black",linewidth='5')
+            pyplot.plot(timeE[75:150]-19.65, avg1,linestyle='-',label="Point1-Exp",color="black", linewidth='3')
             pyplot.fill_between(timeE[75:150]-19.65,u1, l1, color="lightgray",alpha=0.75)
         if 2 in plotSradius:
-            pyplot.plot(timeE[75:150]-19.65, avg2,linestyle='-',label="Point2-Exp",color="red",linewidth='5')
+            pyplot.plot(timeE[75:150]-19.65, avg2,linestyle='-',label="Point2-Exp",color="red", linewidth='3')
             pyplot.fill_between(timeE[75:150]-19.65,u2, l2, color="pink",alpha=0.6)
         if 4 in plotSradius:
-            pyplot.plot(timeE[75:150]-19.65, avg4,linestyle='-',label="Point4-Exp",color="indigo",linewidth='5')
+            pyplot.plot(timeE[75:150]-19.65, avg4,linestyle='-',label="Point4-Exp",color="indigo", linewidth='3')
             pyplot.fill_between(timeE[75:150]-19.65,u4, l4, color="blueviolet",alpha=0.25)
     pyplot.grid()
-    pyplot.xlabel('time [s]')
-    pyplot.ylabel('Temperature Rise')
+    pyplot.xlabel('Time [s]')
+    pyplot.ylabel(r'Temperature Rise, $\Delta T$')
     pyplot.legend(loc='upper left');
     pyplot.xlim(-0.1,12);
     if save == 'YES' :     
@@ -250,8 +250,8 @@ def sim_exp_point(timeE,avg,u,l,tempS1,tempS2,tempS3,tempS4,tempS5,
                   tempSLab,r,save,plotexp):
     pyplot.figure(figsize=(12,8))
     pyplot.title('Temperature Rise - Point'+ str(r));
-    pyplot.xlabel('time [s]')
-    pyplot.ylabel('Temperature Rise')
+    pyplot.xlabel('Time [s]')
+    pyplot.ylabel(r'Temperature Rise, $\Delta T$')
     i, plotQTY = 0, 0
     for point in points: 
         if i == 0:

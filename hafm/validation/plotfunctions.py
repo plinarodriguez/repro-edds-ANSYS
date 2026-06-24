@@ -206,20 +206,20 @@ def sim_exp_uncertainties_ALL(timeE,avg0,u0,l0,avg1,u1,l1,avg2,u2,l2,avg4,u4,l4,
 
     if plotexp == 'YES':
         if 0 in plotSradius:
-            pyplot.plot(timeE[75:150]-19.65, avg0,linestyle='-',label="Point0-Exp",color="darkblue",linewidth='5')
+            pyplot.plot(timeE[75:150]-19.65, avg0,linestyle='-',label="Point0-Exp",color="darkblue",linewidth='3')
             pyplot.fill_between(timeE[75:150]-19.65,u0, l0, color="lightblue",alpha=0.5)
         if 1 in plotSradius:
-            pyplot.plot(timeE[75:150]-19.65, avg1,linestyle='-',label="Point1-Exp",color="black",linewidth='5')
+            pyplot.plot(timeE[75:150]-19.65, avg1,linestyle='-',label="Point1-Exp",color="black",linewidth='3')
             pyplot.fill_between(timeE[75:150]-19.65,u1, l1, color="lightgray",alpha=0.75)
         if 2 in plotSradius:
-            pyplot.plot(timeE[75:150]-19.65, avg2,linestyle='-',label="Point2-Exp",color="red",linewidth='5')
+            pyplot.plot(timeE[75:150]-19.65, avg2,linestyle='-',label="Point2-Exp",color="red",linewidth='3')
             pyplot.fill_between(timeE[75:150]-19.65,u2, l2, color="pink",alpha=0.6)
         if 4 in plotSradius:
-            pyplot.plot(timeE[75:150]-19.65, avg4,linestyle='-',label="Point4-Exp",color="indigo",linewidth='5')
+            pyplot.plot(timeE[75:150]-19.65, avg4,linestyle='-',label="Point4-Exp",color="indigo",linewidth='3')
             pyplot.fill_between(timeE[75:150]-19.65,u4, l4, color="blueviolet",alpha=0.25)
     pyplot.grid()
     pyplot.xlabel('Time [s]')
-    pyplot.ylabel('Temperature Rise')
+    pyplot.ylabel('Temperature Rise, $\Delta T$')
     pyplot.legend(loc='upper left');
     pyplot.xlim(-0.1,12);
     if save == 'YES' :     

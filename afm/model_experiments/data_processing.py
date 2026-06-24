@@ -166,15 +166,24 @@ def plot_intervals_side_by_side(summary, low_col, high_col, title, figname):
     fig, axes = plt.subplots(1, 2, figsize=(12,6), sharey=True)
     for ax, metric in zip(axes, metrics):
         tmp = summary[summary["Metric"] == metric].copy()
-        tmp["Source"] = pd.Categorical(tmp["Source"],categories=["Exp", "Sim"],ordered=True)
+        tmp["Source"] = pd.Categorical(tmp["Source"],categories=["Sim","Exp"],ordered=True) #,categories=["Exp", "Sim"],ordered=True)
         tmp = tmp.sort_values("Source")
-        labels = tmp["Source"].to_numpy()
-        x = np.array([0.0, 0.2])
+        # labels = tmp["Source"].to_numpy()
+        labels=['Model','Experiment']
+        x = np.array([0.0, 0.25])
         means = tmp["Mean"].to_numpy()
         lows = tmp[low_col].to_numpy()
         highs = tmp[high_col].to_numpy()
         yerr = np.vstack([means - lows,highs - means])
-        ax.errorbar(x,means,yerr=yerr,fmt="o",capsize=6,elinewidth=3,linewidth=2)
+        # ax.errorbar(x,means,yerr=yerr,fmt="o",capsize=6,elinewidth=3,linewidth=2)
+        default_colors = ["C0", "C1"]
+        for i in range(len(x)):  # i=0 Exp, i=1 Model
+            ax.errorbar(
+                x[i], means[i],  
+                yerr=[[yerr[0, i]], [yerr[1, i]]],  # keep asymmetric format (2x1)
+                fmt="o", markersize=10,capsize=10, elinewidth=5, linewidth=5,
+                color=default_colors[i]
+            )
         ax.set_xticks(x)
         ax.set_xticklabels(labels)
         ax.set_xlim(-0.25, 0.60)
@@ -210,8 +219,8 @@ def plot_peak_ecdf_area_metric(peak_exp, peak_sim, figname):
     y_exp = np.arange(1, len(x_exp)+1) / len(x_exp)
     x_sim = np.sort(peak_sim)
     y_sim = np.arange(1, len(x_sim)+1) / len(x_sim)
-    plt.step(np.concatenate(([x_exp[0]], x_exp)),np.concatenate(([0], y_exp)),'--o',where="post",label="Experiment")
-    plt.step(np.concatenate(([x_sim[0]], x_sim)),np.concatenate(([0], y_sim)),'--o',where="post",label="Simulation")
+    plt.step(np.concatenate(([x_sim[0]], x_sim)),np.concatenate(([0], y_sim)),'--o',linewidth='4',markersize='8',where="post",color='C0',label="Model")
+    plt.step(np.concatenate(([x_exp[0]], x_exp)),np.concatenate(([0], y_exp)),'--o',linewidth='4',markersize='8',where="post",color='C1',label="Experiment")
     # Show data points
     # plt.plot(x_exp,y_exp,'o',markersize=10,markeredgewidth=2,label='_nolegend_')
     # plt.plot(x_sim,y_sim,'o',markersize=10,markeredgewidth=2,label='_nolegend_')
@@ -231,3 +240,20 @@ def plot_peak_ecdf_area_metric(peak_exp, peak_sim, figname):
 area_peak = plot_peak_ecdf_area_metric(peak_exp,peak_sim,"figures/ecdf_peak_velocity.jpg")
 
 print("Peak velocity area metric =", area_peak)
+
+#################### Validation Plots 
+plt.figure(figsize=(16,8))
+plt.xlabel('Radial Position [mm]')
+plt.ylabel('Velocity [m/s]')
+plt.title('Model vs. Experiments')
+plt.plot(expS2['x (mm)']-5.39655,avgexp, '-k',color="C1",linewidth='5')
+# plt.plot(expS2['x (mm)']-5.39655, plus,linestyle='-',color="gray")
+# plt.plot(expS2['x (mm)']-5.39655, minus,linestyle='-',color="gray")
+plt.xlim(-3,3)
+plt.ylim(0,1.2)
+plt.fill_between(expS2['x (mm)']-5.39655,plus, minus,label="Experiment",color="C1",alpha=0.25)
+plt.plot((sim1[' Y [ m ]']-center1)*1e3, avgsim,label='Model',color='steelblue',linewidth='6')
+# plt.plot((sim1[' Y [ m ]']-center1)*1e3, avgsim,'--',label='Model',color='lightskyblue',linewidth='5')
+plt.legend()
+plt.grid()
+plt.savefig('figures/hydrodynamic_validation.png', dpi=300, bbox_inches='tight')

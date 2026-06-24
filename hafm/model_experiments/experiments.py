@@ -50,3 +50,75 @@ l2=avg2 - 1*max(sd2) #/len(a0) # 3 samples
 l4=avg4 - 1*max(sd4) #/len(a0) # 3 samples
 
 exp_avg = {'time': timeE, 'avg_r0': avg0, 'avg_r1': avg1,'avg_r2': avg2,'avg_r4': avg4}   
+
+#---------------------------------------------------------------
+# Experiments Data - by timestep
+# Radial = 0 mm, Temporal = 0,2,5,10,11,12 [s] 
+# indexN = time_E.index(0.0) 
+def exp_bytime(avg0,avg4,sd0,sd4,tempET1,tempET2,tempET3,tempET4,exp_t):
+    # Identifying timestep indecies
+    time_E = list(timeEdiff[75:150]-20)
+    indexN = time_E.index(0.0) 
+    normExpR0T0 = np.random.normal(avg0[indexN], sd0[indexN],100000)  
+    normExpR4T0 = np.random.normal(avg4[indexN], sd4[indexN],100000)  
+    expR0T0  = [tempET2[0][indexN+75],tempET2[1][indexN+75],tempET2[2][indexN+75]] #center
+    expR1T0  = [tempET3[0][indexN+75],tempET3[1][indexN+75],tempET3[2][indexN+75]] #1mm
+    expR2T0  = [tempET1[0][indexN+75],tempET1[1][indexN+75],tempET1[2][indexN+75]] #2mm
+    expR4T0  = [tempET4[0][indexN+75],tempET4[1][indexN+75],tempET4[2][indexN+75]] #4mm
+    expRallT0 = [expR0T0,expR1T0,expR2T0,expR4T0]
+
+    indexN = time_E.index(2.0) 
+    normExpR0T2 = np.random.normal(avg0[indexN], sd0[indexN],100000)  
+    normExpR4T2 = np.random.normal(avg4[indexN], sd4[indexN],100000)  
+    expR0T2  = [tempET2[0][indexN+75],tempET2[1][indexN+75],tempET2[2][indexN+75]] #center
+    expR1T2  = [tempET3[0][indexN+75],tempET3[1][indexN+75],tempET3[2][indexN+75]] #1mm
+    expR2T2  = [tempET1[0][indexN+75],tempET1[1][indexN+75],tempET1[2][indexN+75]] #2mm
+    expR4T2  = [tempET4[0][indexN+75],tempET4[1][indexN+75],tempET4[2][indexN+75]] #4mm
+    expRallT2 = [expR0T2,expR1T2,expR2T2,expR4T2]
+
+    indexN = time_E.index(5.0)  
+    normExpR0T5 = np.random.normal(avg0[indexN], sd0[indexN],100000)  
+    normExpR4T5 = np.random.normal(avg4[indexN], sd4[indexN],100000)  
+    expR0T5  = [tempET2[0][indexN+75],tempET2[1][indexN+75],tempET2[2][indexN+75]] #center
+    expR1T5  = [tempET3[0][indexN+75],tempET3[1][indexN+75],tempET3[2][indexN+75]] #1mm
+    expR2T5  = [tempET1[0][indexN+75],tempET1[1][indexN+75],tempET1[2][indexN+75]] #2mm
+    expR4T5  = [tempET4[0][indexN+75],tempET4[1][indexN+75],tempET4[2][indexN+75]] #4mm
+    expRallT5 = [expR0T5,expR1T5,expR2T5,expR4T5]
+
+    indexN = time_E.index(10.0) 
+    normExpR0T10 = np.random.normal(avg0[indexN], sd0[indexN],100000)  
+    normExpR4T10 = np.random.normal(avg4[indexN], sd4[indexN],100000)  
+    expR0T10 = [tempET2[0][indexN+75],tempET2[1][indexN+75],tempET2[2][indexN+75]] #center
+    expR1T10 = [tempET3[0][indexN+75],tempET3[1][indexN+75],tempET3[2][indexN+75]] #1mm
+    expR2T10 = [tempET1[0][indexN+75],tempET1[1][indexN+75],tempET1[2][indexN+75]] #2mm
+    expR4T10 = [tempET4[0][indexN+75],tempET4[1][indexN+75],tempET4[2][indexN+75]] #4mm
+    expRallT10 = [expR0T10,expR1T10,expR2T10,expR4T10]
+
+    indexN = time_E.index(11.0) 
+    normExpR0T11 = np.random.normal(avg0[indexN], sd0[indexN],100000)  
+    normExpR4T11 = np.random.normal(avg4[indexN], sd4[indexN],100000)  
+    expR0T11 = [tempET2[0][indexN+75],tempET2[1][indexN+75],tempET2[2][indexN+75]] #center
+    expR1T11 = [tempET3[0][indexN+75],tempET3[1][indexN+75],tempET3[2][indexN+75]] #1mm
+    expR2T11 = [tempET1[0][indexN+75],tempET1[1][indexN+75],tempET1[2][indexN+75]] #2mm
+    expR4T11 = [tempET4[0][indexN+75],tempET4[1][indexN+75],tempET4[2][indexN+75]] #4mm
+    expRallT11 = [expR0T11,expR1T11,expR2T11,expR4T11]
+
+    indexN = time_E.index(12.0) 
+    normExpR0T12 = np.random.normal(avg0[indexN], sd0[indexN], 100000) 
+    normExpR4T12 = np.random.normal(avg4[indexN], sd4[indexN], 100000) 
+    expR0T12 = [tempET2[0][indexN+75],tempET2[1][indexN+75],tempET2[2][indexN+75]] #center
+    expR1T12 = [tempET3[0][indexN+75],tempET3[1][indexN+75],tempET3[2][indexN+75]] #1mm
+    expR2T12 = [tempET1[0][indexN+75],tempET1[1][indexN+75],tempET1[2][indexN+75]] #2mm
+    expR4T12 = [tempET4[0][indexN+75],tempET4[1][indexN+75],tempET4[2][indexN+75]] #4mm
+    expRallT12 = [expR0T12,expR1T12,expR2T12,expR4T12]
+    expRallTall = [expRallT0,expRallT2,expRallT5,expRallT10,expRallT11,expRallT12]
+    
+    if(exp_t == 'R0'):
+        exp  = [expR0T0,expR0T2,expR0T5,expR0T10,expR0T11,expR0T12];
+    if(exp_t == 'R1'):
+        exp  = [expR1T0,expR1T2,expR1T5,expR1T10,expR1T11,expR1T12];
+    if(exp_t == 'R2'):
+        exp  = [expR2T0,expR2T2,expR2T5,expR2T10,expR2T11,expR2T12];
+    if(exp_t == 'R4'):
+        exp  = [expR4T0,expR4T2,expR4T5,expR4T10,expR4T11,expR4T12];
+    return(exp)

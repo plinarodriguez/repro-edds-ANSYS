@@ -2,16 +2,16 @@ import pandas as pd
 import numpy as np
 
 # Simulation Sample 
-tempS1 = pd.read_csv("Data/data_sim/outputSample1.csv",skiprows = 4)
-tempS2 = pd.read_csv("Data/data_sim/outputSample2.csv",skiprows = 4)
-tempS3 = pd.read_csv("Data/data_sim/outputSample3.csv",skiprows = 4)
-tempS4 = pd.read_csv("Data/data_sim/outputSample4.csv",skiprows = 4)
-tempS5 = pd.read_csv("Data/data_sim/outputSample5.csv",skiprows = 4)
-tempS6 = pd.read_csv("Data/data_sim/outputSample6.csv",skiprows = 4)
-tempS7 = pd.read_csv("Data/data_sim/outputSample7.csv",skiprows = 4)
-tempS8 = pd.read_csv("Data/data_sim/outputSample8.csv",skiprows = 4)
-tempS9 = pd.read_csv("Data/data_sim/outputSample9.csv",skiprows = 4)
-tempS10 = pd.read_csv("Data/data_sim/outputSample10.csv",skiprows = 4)
+tempS1 = pd.read_csv("data/data_sim/outputSample1.csv",skiprows = 4)
+tempS2 = pd.read_csv("data/data_sim/outputSample2.csv",skiprows = 4)
+tempS3 = pd.read_csv("data/data_sim/outputSample3.csv",skiprows = 4)
+tempS4 = pd.read_csv("data/data_sim/outputSample4.csv",skiprows = 4)
+tempS5 = pd.read_csv("data/data_sim/outputSample5.csv",skiprows = 4)
+tempS6 = pd.read_csv("data/data_sim/outputSample6.csv",skiprows = 4)
+tempS7 = pd.read_csv("data/data_sim/outputSample7.csv",skiprows = 4)
+tempS8 = pd.read_csv("data/data_sim/outputSample8.csv",skiprows = 4)
+tempS9 = pd.read_csv("data/data_sim/outputSample9.csv",skiprows = 4)
+tempS10 = pd.read_csv("data/data_sim/outputSample10.csv",skiprows = 4)
 tempSLab = tempS1.columns # header labels
 
 # Simulation timesteps

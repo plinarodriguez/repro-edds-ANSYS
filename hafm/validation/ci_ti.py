@@ -49,7 +49,7 @@ def plot_intervals_side_by_side(summary, low_col, high_col, title, figname,metri
         tmp = summary[summary["Metric"] == metric].copy()
         tmp["Source"] = pd.Categorical(tmp["Source"],categories=["Experiment", "Simulation"],ordered=True)
         tmp = tmp.sort_values("Source")
-        labels = ['Exp','Sim'] #tmp["Source"].to_numpy()
+        labels = ['Experiment','Model'] #tmp["Source"].to_numpy()
         x = np.array([0.0, 0.2])
         means = tmp["Mean"].to_numpy()
         lows = tmp[low_col].to_numpy()
@@ -134,8 +134,6 @@ plot_intervals_side_by_side(
     figname="figures/tolerance_interval_temperature.jpg",
     metrics_to_plot=["R1", "R4"]
 )
-
-
 
 # *********************************
 #  By time & temp rise
@@ -391,6 +389,7 @@ for target_time in target_times[1:]:
         # Experiment values
         exp_values = []
         exp_time = tempE["Time"].to_numpy()
+
         for col in exp_cols[loc]:
             T = tempE[col].to_numpy()
             idx0 = np.argmin(np.abs(exp_time - heating_start_exp))
@@ -400,7 +399,7 @@ for target_time in target_times[1:]:
             dT = T[idx] - T0
             exp_values.append(dT)
         # print(f'exp_values = {exp_values}')
-        area_signed = area_metric_ecdf_signed(exp_values, sim_values, normalize=True)
+        area_signed = area_metric_ecdf_signed(exp_values, sim_values, normalize=False)
         signed_rows.append({"Time": target_time,"Radius": loc,"Signed Area Metric": area_signed})
 signed_df = pd.DataFrame(signed_rows)
 signed_heatmap = signed_df.pivot(index="Time",columns="Radius",values="Signed Area Metric")
@@ -410,7 +409,9 @@ vmax = np.nanmax(np.abs(signed_heatmap.values))
 plt.figure(figsize=(10, 8))
 im = plt.imshow(signed_heatmap.values,aspect="auto",origin="upper",cmap="coolwarm",vmin=-vmax,vmax=vmax)
 cbar = plt.colorbar(im)
-cbar.set_label("Normalized Area Metric (%)", rotation=90, labelpad=15)
+# cbar.set_label("Normalized Area Metric (%)", rotation=90, labelpad=15)
+# cbar.set_label("Area Metric (%)", rotation=90, labelpad=15)
+cbar.set_label(r"Area Metric ($^{\circ}$C)",rotation=90,labelpad=15)
 plt.xticks(np.arange(len(signed_heatmap.columns)),signed_heatmap.columns)
 plt.yticks(np.arange(len(signed_heatmap.index)),signed_heatmap.index)
 plt.xlabel("Radius")
@@ -419,7 +420,97 @@ plt.title("Area Metric")
 for i in range(signed_heatmap.shape[0]):
     for j in range(signed_heatmap.shape[1]):
         val = signed_heatmap.values[i, j]
-        plt.text(j,i,f"{val:.2f}",ha="center",va="center",color="black")
+        plt.text(j,i,f"{val:.1f}",ha="center",va="center",color="black")
 plt.tight_layout()
-plt.savefig("figures/AreaMetric_HeatMap_normalizedAvgExpPercent_signed.png", dpi=300)
+# plt.savefig("figures/AreaMetric_HeatMap_normalizedAvgExpPercent_signed.png", dpi=300)
+plt.savefig("figures/AreaMetric_HeatMap_signed.png", dpi=300)
 plt.show()
+
+# -------
+
+def plot_intervals_by_radius(summary, low_col, high_col, title, figname, metrics_to_plot):
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+
+    x = np.arange(len(metrics_to_plot))
+    offset = 0.12
+
+    default_colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
+    exp_color = default_colors[1]
+    sim_color = default_colors[0]
+
+    for source, dx, color, label in [
+        ("Experiment", -offset, exp_color, "Experiment"),
+        ("Simulation",  offset, sim_color, "Model")
+    ]:
+
+        means = []
+        lows = []
+        highs = []
+
+        for metric in metrics_to_plot:
+            row = summary[
+                (summary["Metric"] == metric) &
+                (summary["Source"] == source)
+            ].iloc[0]
+
+            means.append(row["Mean"])
+            lows.append(row[low_col])
+            highs.append(row[high_col])
+
+        means = np.asarray(means)
+        lows = np.asarray(lows)
+        highs = np.asarray(highs)
+
+        yerr = np.vstack([
+            means - lows,
+            highs - means
+        ])
+
+        ax.errorbar(
+            x + dx,
+            means,
+            yerr=yerr,
+            fmt="o",
+            markersize=8,
+            capsize=8,
+            elinewidth=3,
+            capthick=3,
+            linewidth=2,
+            color=color,
+            label=label
+        )
+    ax.set_xticks(x)
+    ax.set_xticklabels(metrics_to_plot)
+
+    ax.set_xlabel("Radial position")
+    ax.set_ylabel(r"Temperature rise, $\Delta T$ (K)")
+    ax.set_title(title)
+    ax.grid(True, axis="y", alpha=0.3)
+    ax.legend()
+
+    plt.tight_layout()
+    plt.savefig(figname, dpi=300)
+    plt.show()
+    plt.close()
+
+
+for t in target_times:
+    summary_t = summary_temp[summary_temp["Time"] == t]
+    plot_intervals_by_radius(
+        summary_t,
+        low_col="CI Low",
+        high_col="CI High",
+        title=f"95% Confidence Intervals at {t} s",
+        figname=f"figures/confidence_interval_temperature_rise_{t}s_all_radius.jpg",
+        metrics_to_plot=["R0", "R1", "R2", "R4"]
+    )
+        
+    plot_intervals_by_radius(
+        summary_t,
+        low_col="TI Low",
+        high_col="TI High",
+        title=f"95/95 Tolerance Intervals at {t} s",
+        figname=f"figures/tolerance_interval_temperature_rise_{t}s_all_radius.jpg",
+        metrics_to_plot=["R0", "R1", "R2", "R4"]
+    )
