@@ -1,0 +1,16 @@
+,0
+D_exp_mean_fit_K_m3,9.756777750777062e-05
+D_sim_mean_fit_K_m3,0.00022596475357766044
+percent_difference_fit,131.5977255499787
+u_piv_m_per_s,0.1348
+u_therm_K,0.4
+u_D_exp_rep_K_m3,6.1002858160566115e-06
+u_D_exp_meas_K_m3,0.000104869821229214
+u_D_exp_total_K_m3,0.0001050470984448637
+u_D_sim_rep_K_m3,8.91047308054717e-06
+u_D_sim_num_K_m3,0.0
+u_D_sim_total_K_m3,8.91047308054717e-06
+Delta_D_K_m3,0.0001283969760698898
+u_Delta_D_K_m3,0.00010542433031423079
+intervals_overlap,False
+p_value_uncertainty_aware,0.34744256750080355

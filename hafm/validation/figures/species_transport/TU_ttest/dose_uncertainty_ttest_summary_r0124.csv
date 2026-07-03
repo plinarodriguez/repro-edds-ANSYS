@@ -1,0 +1,24 @@
+ = 0
+test = Uncertainty dose comparison
+quantity_tested = temperature-weighted dose with propagated uncertainty
+
+alpha = 0.05
+n_exp_independent = 3
+n_sim_independent = 10
+
+D_exp_mean = 9.7568e-05
+D_exp_propagated_uncertainty = 0.0001246
+D_exp = [-2.7005e-05, 0.00022]
+
+D_sim_mean = 0.000226
+D_sim_propagated_uncertainty = 8.9105e-06
+D_sim= [0.000217,0.000235]
+
+percent difference = 131.597%
+difference (D_sim - D_exp) = 0.0001284
+standard uncertainty of difference = 0.0001249
+t-statistic = 1.028068
+degrees of freedom = 2
+p_value = 0.41199
+
+Not statistically distinguishable at alpha=0.05 when propagated dose uncertainty is included

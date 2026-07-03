@@ -1,0 +1,2 @@
+test,alpha,mean_diff_(De-Dc),t_stat,welch_df,p_value_two_sided,passes_test,decision
+Welch two-sample t-test,0.05,-0.0001215377789382629,-1.9356565408338806,2.0848150752859005,0.18734604056007662,True,PASS (no significant difference)

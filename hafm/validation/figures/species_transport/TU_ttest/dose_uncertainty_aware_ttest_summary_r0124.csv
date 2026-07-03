@@ -1,0 +1,24 @@
+,0
+test,Uncertainty-aware dose comparison
+quantity_tested,temperature-weighted dose with propagated uncertainty
+alpha,0.05
+n_exp_independent,3
+n_sim_independent,10
+D_exp_mean_K_m3,9.756777750777062e-05
+D_exp_propagated_uncertainty_K_m3,0.0001050470984448637
+D_exp_low_K_m3,-7.479320937093078e-06
+D_exp_high_K_m3,0.00020261487595263432
+D_sim_mean_K_m3,0.00022596475357766044
+D_sim_propagated_uncertainty_K_m3,8.91047308054717e-06
+D_sim_low_K_m3,0.00021705428049711327
+D_sim_high_K_m3,0.00023487522665820761
+percent_difference,131.5977255499787
+difference_D_sim_minus_D_exp_K_m3,0.0001283969760698898
+standard_uncertainty_of_difference_K_m3,0.00010542433031423079
+t_statistic_uncertainty_aware,1.2179064897750462
+degrees_of_freedom_conservative,2
+p_value_uncertainty_aware,0.34744256750080355
+statistically_distinguishable_alpha_0_05,False
+intervals_overlap,False
+interpretation,Not statistically distinguishable at alpha=0.05 when propagated dose uncertainty is included
+note,This comparison uses the propagated dose uncertainties shown in the dose interval plots. The independent realization counts are n_exp=3 and n_sim=10. The 9 experimental and 30 simulation internal combinations are not treated as independent samples.
